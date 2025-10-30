@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 更新 Rust 專案的發布檔案
-從 rs\ 下所有的 target\release 資料夾中取得 *.exe 檔案，
-移動到 rs\release 目錄，然後刪除 target 資料夾。
+從 rs 下所有的 target/release 資料夾中取得 *.exe 檔案，
+移動到 rs/release 目錄，然後刪除 target 資料夾。
 """
 
 import os
@@ -20,7 +20,7 @@ def main():
     print(f"目標目錄: {release_dir}")
     print()
     
-    # 搜尋所有的 target\release 資料夾
+    # 搜尋所有的 target/release 資料夾
     for target_release_dir in rs_dir.glob("*/target/release"):
         print(f"找到: {target_release_dir}")
         
