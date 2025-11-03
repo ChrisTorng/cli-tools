@@ -49,3 +49,4 @@ cargo build 2>&1 | tee build_log.txt
 # 附加模式記錄
 Get-Date | tee -a log.txt
 ```
+

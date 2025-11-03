@@ -11,18 +11,18 @@
 ```
 cli-tools/
 ├── cmd/            - Windows 批次檔腳本
-│   ├── dq.cmd      - 整合多個工具的處理流程
+│   ├── dequote.cmd      - 整合多個工具的處理流程
 │   ├── kvcookies.cmd - Cookies 格式化快捷指令
 │   └── kvpath.cmd  - PATH 環境變數格式化快捷指令
 ├── ps/             - PowerShell 腳本 (待開發)
 ├── py/             - Python 實作
-│   └── dq.py       - 雙引號移除工具 (Python 版本)
+│   └── dequote.py       - 雙引號移除工具 (Python 版本)
 └── rs/             - Rust 實作 (主要開發方向)
-    ├── dq/         - 雙引號移除工具 (Rust 版本)
+    ├── dequote/         - 雙引號移除工具 (Rust 版本)
     ├── kv-splitter/ - Key/Value 字串切割工具 (Rust 版本)
     ├── tee/        - tee 命令 (Rust 版本)
     ├── release/    - 編譯後的執行檔
-    │   ├── dq.exe
+    │   ├── dequote.exe
     │   ├── kv-splitter.exe
     │   ├── tee.exe
     │   └── updaters.py - 自動化發布腳本
@@ -31,21 +31,21 @@ cli-tools/
 
 ## 工具清單
 
-### dq - 雙引號移除工具
+### dequote - 雙引號移除工具
 
 移除輸入字串前後的雙引號。
 
 **可用版本:**
-- **Python** (`py/dq.py`): 跨平台,需要 Python 3
-- **Rust** (`rs/dq/`): 高效能,編譯為原生執行檔
+- **Python** (`py/dequote.py`): 跨平台,需要 Python 3
+- **Rust** (`rs/dequote/`): 高效能,編譯為原生執行檔
 
 **使用方式:**
 ```powershell
 # Python 版本
-echo '"hello"' | python py/dq.py
+echo '"hello"' | python py/dequote.py
 
 # Rust 版本 (編譯後)
-echo '"hello"' | rs/release/dq.exe
+echo '"hello"' | rs/release/dequote.exe
 # 輸出: hello
 ```
 
@@ -123,18 +123,18 @@ echo "name:John,age:30" | rs/release/kv-splitter.exe -i "," -k ":" -I "\n" -K " 
 
 在 `cmd/` 資料夾中提供了整合多個工具的批次檔，用於快速處理剪貼簿內容。
 
-#### dq.cmd - 移除雙引號處理流程
+#### dequote.cmd - 移除雙引號處理流程
 
 將剪貼簿中的文字移除前後雙引號後，複製回剪貼簿並顯示。
 
 ```batch
-pasta | dq | tee | cp
+pasta | dequote | tee | cp
 pasta
 ```
 
 **處理流程:**
 1. `pasta` - 讀取剪貼簿內容
-2. `dq` - 移除前後雙引號
+2. `dequote` - 移除前後雙引號
 3. `tee` - 同時輸出到螢幕和下一個工具
 4. `cp` - 複製到剪貼簿
 5. `pasta` - 再次顯示剪貼簿內容（驗證結果）
@@ -186,7 +186,7 @@ Rust 是本專案的主要開發語言,提供最佳的效能和跨平台相容�
 # 訪問 https://rustup.rs/
 
 # 2. 編譯專案
-cd rs/dq
+cd rs/dequote
 cargo build --release
 
 # 3. 執行專案
@@ -204,7 +204,7 @@ Python 工具適合快速原型開發和跨平台腳本。
 
 **執行方式:**
 ```powershell
-python py/dq.py
+python py/dequote.py
 ```
 
 ## 發布流程
@@ -213,7 +213,7 @@ python py/dq.py
 
 ```powershell
 # 進入專案目錄
-cd rs/dq
+cd rs/dequote
 
 # 編譯發布版本
 cargo build --release
@@ -262,3 +262,4 @@ python rs/release/updaters.py
 開發新工具前,請先閱讀:
 - Rust 工具: [rs/RustInstructions.md](rs/RustInstructions.md)
 - 確保程式碼通過測試和格式檢查
+

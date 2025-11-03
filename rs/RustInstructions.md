@@ -13,11 +13,11 @@
 
 ```
 rs/
-├── dq/          - 移除字串前後雙引號的工具
+├── dequote/          - 移除字串前後雙引號的工具
 ├── kv-splitter/ - Key/Value 字串切割和格式化工具
 ├── tee/         - Windows tee 命令的 Rust 實作
 ├── release/     - 編譯後的執行檔和發布腳本
-│   ├── dq.exe
+│   ├── dequote.exe
 │   ├── kv-splitter.exe
 │   ├── tee.exe
 │   └── updaters.py
@@ -26,13 +26,13 @@ rs/
 
 ## 工具清單
 
-### dq - 雙引號移除工具
+### dequote - 雙引號移除工具
 
 從標準輸入讀取文字,移除前後的雙引號並輸出。
 
 **使用範例:**
 ```powershell
-echo '"hello"' | dq
+echo '"hello"' | dequote
 # 輸出: hello
 ```
 
@@ -92,7 +92,7 @@ cargo --version
 
 ```powershell
 # 進入專案資料夾
-cd rs\dq
+cd rs\dequote
 
 # 除錯建構
 cargo build
@@ -284,3 +284,4 @@ strip = true        # 移除除錯符號以減小檔案大小
 2. 撰寫測試: `cargo test`
 3. 更新相關文件(README.md)
 4. 提交前確認發布建構正常: `cargo build --release`
+
