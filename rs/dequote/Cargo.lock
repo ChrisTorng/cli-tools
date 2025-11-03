@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "dq"
+name = "dequote"
 version = "0.1.0"
