@@ -185,14 +185,17 @@ Rust 是本專案的主要開發語言,提供最佳的效能和跨平台相容�
 # 1. 安裝 Rust (首次使用)
 # 訪問 https://rustup.rs/
 
-# 2. 編譯專案
-cd rs/dequote
-cargo build --release
+# 2. 編譯專案（workspace）
+cd rs
+# 建議使用 --bins 以確保所有二進位均被建構
+cargo build --release --bins
 
-# 3. 執行專案
-cargo run
+# 3. 執行專案（以特定專案為例）
+cd dequote
+cargo run --release
 
 # 4. 執行測試
+cd ..
 cargo test
 ```
 
@@ -212,28 +215,25 @@ python py/dequote.py
 ### 編譯 Rust 工具
 
 ```powershell
-# 進入專案目錄
-cd rs/dequote
+# 進入 Rust workspace 根目錄
+cd rs
 
-# 編譯發布版本
-cargo build --release
+# 編譯發布版本（會編譯 workspace 中所有 bins）
+cargo build --release --bins
 
 # 編譯後的執行檔位於 target/release/
 ```
 
 ### 自動化發布
 
-使用提供的 Python 腳本自動收集所有編譯好的執行檔:
+本專案已加入 GitHub Actions（`.github/workflows/build-rs-tools.yml`），會在 push 到 `main`、PR 或發佈 tag 時在 CI 中自動建構並打包二進位檔成 zip，並在打 tag 時建立 release。
 
-```powershell
-# 在 cli-tools 目錄下執行
-python rs/release/updaters.py
-```
+另外保留 `rs/release/updaters.py` 作為本機/離線收集工具的備援；CI 會自動收集所有建構結果，因此新增工具時通常只要：
 
-此腳本會:
-1. 搜尋所有 Rust 專案的 `target/release` 資料夾
-2. 將 `.exe` 檔案移動到 `rs/release/` 目錄
-3. 清理 `target` 資料夾以節省空間
+1. 在 `rs/` 下建立新的專案資料夾（例如 `rs/my-tool/`）
+2. 在 `rs/Cargo.toml` 的 `members` 陣列中加入 `"my-tool"`
+
+CI 會自動建構並收集新的二進位檔，通常不需要修改 workflow。
 
 ## 為什麼選擇 Rust?
 
@@ -262,4 +262,3 @@ python rs/release/updaters.py
 開發新工具前,請先閱讀:
 - Rust 工具: [rs/RustInstructions.md](rs/RustInstructions.md)
 - 確保程式碼通過測試和格式檢查
-

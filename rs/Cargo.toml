@@ -1,0 +1,17 @@
+[workspace]
+members = [
+    "dequote",
+    "kv-splitter",
+    "tee",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
