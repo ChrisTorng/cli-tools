@@ -66,11 +66,13 @@ jobs:
 
       - name: Create zip archives
         run: |
-          (cd linux && zip -r ../rs-tools-linux.zip *)
-          (cd windows && zip -r ../rs-tools-windows.zip *)
+          # Use repository name to generate zip file names so CI does not need per-repo edits
+          repo_name="${{ github.event.repository.name }}"
+          (cd linux && zip -r "../${repo_name}-linux.zip" *)
+          (cd windows && zip -r "../${repo_name}-windows.zip" *)
 
       - uses: softprops/action-gh-release@v1
         with:
           files: |
-            rs-tools-linux.zip
-            rs-tools-windows.zip
+            ${{ github.event.repository.name }}-linux.zip
+            ${{ github.event.repository.name }}-windows.zip
