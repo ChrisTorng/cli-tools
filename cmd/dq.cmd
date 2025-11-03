@@ -1,2 +1,3 @@
-rem @echo off
-pasta | dq | tee | cp
+@echo off
+pasta | dq | cp
+pasta
