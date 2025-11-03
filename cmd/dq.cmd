@@ -1,3 +1,3 @@
 @echo off
-pasta | dq | cp
+pasta | dequote | cp
 pasta
