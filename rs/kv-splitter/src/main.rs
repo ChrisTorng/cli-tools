@@ -36,12 +36,18 @@ struct SplitConfig {
 impl SplitConfig {
     fn from_pattern(pattern: &str) -> Option<Self> {
         match pattern.to_lowercase().as_str() {
-            "path" => Some(Self {
-                item_separator: ";".to_string(),
-                kv_separator: None,
-                item_replacement: "\n".to_string(),
-                kv_replacement: "\t".to_string(),
-            }),
+            "path" => {
+                // 根據作業系統選擇正確的 PATH 分隔符
+                // Windows 使用 ";"，Unix-like 系統 (Linux, macOS) 使用 ":"
+                let path_separator = if cfg!(windows) { ";" } else { ":" };
+
+                Some(Self {
+                    item_separator: path_separator.to_string(),
+                    kv_separator: None,
+                    item_replacement: "\n".to_string(),
+                    kv_replacement: "\t".to_string(),
+                })
+            },
             "cookies" => Some(Self {
                 item_separator: ";".to_string(),
                 kv_separator: Some("=".to_string()),
@@ -124,10 +130,20 @@ mod tests {
     use super::*;
 
     #[test]
+    #[cfg(windows)]
     fn test_path_pattern() {
         let config = SplitConfig::from_pattern("path").unwrap();
         let input = "C:\\Python313\\Scripts\\;C:\\Python313\\;C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.8\\bin";
         let expected = "C:\\Python313\\Scripts\\\nC:\\Python313\\\nC:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.8\\bin";
+        assert_eq!(process_input(input, &config), expected);
+    }
+
+    #[test]
+    #[cfg(not(windows))]
+    fn test_path_pattern() {
+        let config = SplitConfig::from_pattern("path").unwrap();
+        let input = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
+        let expected = "/usr/local/bin\n/usr/bin\n/bin\n/usr/sbin\n/sbin";
         assert_eq!(process_input(input, &config), expected);
     }
 

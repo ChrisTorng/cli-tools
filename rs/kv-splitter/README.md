@@ -21,6 +21,7 @@ cargo build --release
 
 #### PATH 環境變數處理
 
+**Windows:**
 ```bash
 echo "C:\Python313\Scripts\;C:\Python313\;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\bin" | kv-splitter -p path
 ```
@@ -30,6 +31,20 @@ echo "C:\Python313\Scripts\;C:\Python313\;C:\Program Files\NVIDIA GPU Computing 
 C:\Python313\Scripts\
 C:\Python313\
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\bin
+```
+
+**Linux/macOS:**
+```bash
+echo "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" | kv-splitter -p path
+```
+
+輸出：
+```
+/usr/local/bin
+/usr/bin
+/bin
+/usr/sbin
+/sbin
 ```
 
 #### Cookies 處理
@@ -69,7 +84,9 @@ city = Taipei
 ## 預定義 Pattern
 
 ### path
-- 項目分隔：`;`
+- 項目分隔：根據作業系統自動選擇
+  - Windows: `;`
+  - Linux/macOS: `:`
 - 無 key/value 分隔
 - 項目替代：換行符號 `\n`
 
