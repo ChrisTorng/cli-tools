@@ -1,0 +1,107 @@
+#!/bin/bash
+
+# dlunzip - 下載並解壓各種壓縮檔
+# 用法: dlunzip <URL> [目標目錄]
+# 如果未指定目標目錄，則解壓到當前目錄
+
+set -e
+
+# 顯示用法
+show_usage() {
+    echo "用法: dlunzip <URL> [目標目錄]"
+    echo "  URL: 要下載的壓縮檔網址"
+    echo "  目標目錄: 解壓縮的目標目錄 (可選，預設為當前目錄)"
+    exit 1
+}
+
+# 檢查參數
+if [ $# -lt 1 ]; then
+    show_usage
+fi
+
+URL="$1"
+TARGET_DIR="${2:-.}"
+
+# 確保目標目錄存在
+mkdir -p "$TARGET_DIR"
+
+# 從 URL 取得檔案名稱
+FILENAME=$(basename "$URL")
+
+# 臨時下載檔案路徑
+TEMP_FILE="/tmp/dlunzip_$$_${FILENAME}"
+
+echo "正在下載: $URL"
+echo "目標目錄: $TARGET_DIR"
+
+# 下載檔案
+if command -v wget >/dev/null 2>&1; then
+    wget -q --show-progress -O "$TEMP_FILE" "$URL"
+elif command -v curl >/dev/null 2>&1; then
+    curl -L -o "$TEMP_FILE" "$URL"
+else
+    echo "錯誤: 找不到 wget 或 curl 命令"
+    exit 1
+fi
+
+echo "下載完成: $FILENAME"
+
+# 根據檔案副檔名解壓
+echo "正在解壓縮..."
+
+case "$FILENAME" in
+    *.zip)
+        if ! command -v unzip >/dev/null 2>&1; then
+            echo "錯誤: 找不到 unzip 命令"
+            rm -f "$TEMP_FILE"
+            exit 1
+        fi
+        unzip -q "$TEMP_FILE" -d "$TARGET_DIR"
+        ;;
+    *.tar.gz|*.tgz)
+        tar -xzf "$TEMP_FILE" -C "$TARGET_DIR"
+        ;;
+    *.tar.bz2|*.tbz2)
+        tar -xjf "$TEMP_FILE" -C "$TARGET_DIR"
+        ;;
+    *.tar.xz|*.txz)
+        tar -xJf "$TEMP_FILE" -C "$TARGET_DIR"
+        ;;
+    *.tar)
+        tar -xf "$TEMP_FILE" -C "$TARGET_DIR"
+        ;;
+    *.gz)
+        gunzip -c "$TEMP_FILE" > "$TARGET_DIR/$(basename "$FILENAME" .gz)"
+        ;;
+    *.bz2)
+        bunzip2 -c "$TEMP_FILE" > "$TARGET_DIR/$(basename "$FILENAME" .bz2)"
+        ;;
+    *.7z)
+        if ! command -v 7z >/dev/null 2>&1; then
+            echo "錯誤: 找不到 7z 命令"
+            rm -f "$TEMP_FILE"
+            exit 1
+        fi
+        7z x "$TEMP_FILE" -o"$TARGET_DIR"
+        ;;
+    *.rar)
+        if ! command -v unrar >/dev/null 2>&1; then
+            echo "錯誤: 找不到 unrar 命令"
+            rm -f "$TEMP_FILE"
+            exit 1
+        fi
+        unrar x "$TEMP_FILE" "$TARGET_DIR/"
+        ;;
+    *)
+        echo "錯誤: 不支援的壓縮格式: $FILENAME"
+        rm -f "$TEMP_FILE"
+        exit 1
+        ;;
+esac
+
+# 清理臨時檔案
+rm -f "$TEMP_FILE"
+
+echo "解壓完成到: $TARGET_DIR"
+echo "內容:"
+ls -lh "$TARGET_DIR"
