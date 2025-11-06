@@ -1,0 +1,13 @@
+#!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# 預設路徑為當前目錄
+PATH_TO_SCAN="${1:-.}"
+
+if [ ! -e "$PATH_TO_SCAN" ]; then
+    echo "錯誤: 路徑不存在: $PATH_TO_SCAN" >&2
+    exit 1
+fi
+
+# 遞迴列出所有檔案，依副檔名分組並計數，按數量降序排列
+find "$PATH_TO_SCAN" -type f | sed 's/.*\./\./' | sort | uniq -c | sort -rn | awk '{printf "%-20s %s\n", $2, $1}'
