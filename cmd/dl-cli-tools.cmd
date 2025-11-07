@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 setlocal
 
 set "SCRIPT_DIR=%~dp0"
@@ -11,4 +12,4 @@ git pull origin main
 
 echo.
 echo === 下載 Rust 工具 ===
-python "%REPO_DIR%\py\dl-latest-rs.py" "%REPO_URL%" "%REPO_DIR%\rs\release\"
+python "%REPO_DIR%\py\dl-latest-rs.py" "%REPO_URL%" "%REPO_DIR%\rs\release"

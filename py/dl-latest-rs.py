@@ -47,11 +47,10 @@ def make_executable(target_dir):
         print(f"錯誤: 目標目錄不存在: {target_dir}")
         sys.exit(1)
     
-    print(f"\n設定檔案為可執行...")
-    
     system = platform.system().lower()
     
     if system in ['linux', 'darwin']:
+        print(f"\n設定檔案為可執行...")
         # Unix-like 系統使用 chmod
         for item in target_path.rglob('*'):
             if item.is_file():
@@ -61,15 +60,7 @@ def make_executable(target_dir):
                     print(f"  ✓ {item.name}")
                 except Exception as e:
                     print(f"  ✗ {item.name}: {e}")
-    elif system == 'windows':
-        # Windows 系統，檔案預設就有執行權限
-        print("  Windows 系統，檔案已自動具有執行權限")
-        for item in target_path.rglob('*'):
-            if item.is_file():
-                print(f"  ✓ {item.name}")
     
-    print("完成!")
-
 
 def main():
     """主程式"""

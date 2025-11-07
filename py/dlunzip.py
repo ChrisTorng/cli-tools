@@ -18,6 +18,7 @@ import bz2
 import lzma
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 
 
@@ -170,8 +171,9 @@ def main():
         print("錯誤: 無法從 URL 取得檔案名稱")
         sys.exit(1)
     
-    # 臨時下載檔案路徑
-    temp_file = f"/tmp/dlunzip_{os.getpid()}_{filename}"
+    # 臨時下載檔案路徑 (使用系統臨時目錄)
+    temp_dir = tempfile.gettempdir()
+    temp_file = os.path.join(temp_dir, f"dlunzip_{os.getpid()}_{filename}")
     
     print(f"目標目錄: {target_dir}")
     
