@@ -3,7 +3,7 @@
 """
 dl-latest-rs - 下載最新的 Rust 工具發布版本
 用法: dl-latest-rs <基礎URL> <目標路徑>
-範例: dl-latest-rs https://github.com/ChrisTorng/cli-tools/releases/download/latest/cli-tools ./bin
+範例: dl-latest-rs https://github.com/ChrisTorng/cli-tools ./bin
 """
 
 import os
@@ -20,7 +20,7 @@ def show_usage():
     print("  目標路徑: 解壓縮的目標目錄")
     print()
     print("範例:")
-    print("  dl-latest-rs https://github.com/ChrisTorng/cli-tools/releases/download/latest/cli-tools ./bin")
+    print("  dl-latest-rs https://github.com/ChrisTorng/cli-tools ./bin")
     sys.exit(1)
 
 
@@ -83,8 +83,15 @@ def main():
     # 取得平台後綴
     suffix = get_platform_suffix()
     
+    # 從 repo URL 解析出 repo 名稱
+    # 例如: https://github.com/ChrisTorng/cli-tools -> cli-tools
+    normalized = base_url.rstrip('/')
+    repo_name = normalized.split('/')[-1]
+    
     # 組合完整下載網址
-    download_url = f"{base_url}{suffix}"
+    # https://github.com/ChrisTorng/cli-tools/releases/latest/download/cli-tools-linux.zip
+    download_url = f"{normalized}/releases/latest/download/{repo_name}{suffix}"
+
     
     print(f"平台: {platform.system()}")
     print(f"下載網址: {download_url}")
