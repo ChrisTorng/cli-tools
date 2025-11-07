@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$SCRIPT_DIR/../../dotfiles-cli-tools"
+REPO_URL="https://github.com/ChrisTorng/dotfiles-cli-tools"
+
+echo "=== 更新 dotfiles-cli-tools 倉儲 ==="
+cd "$REPO_DIR"
+git pull origin main
+
+echo ""
+echo "=== 設定腳本為可執行 ==="
+# 設定 ps/ 目錄下所有檔案為可執行
+find "$REPO_DIR/ps" -type f -exec chmod u+x {} \;
+echo "✓ ps/ 目錄檔案已設定為可執行"
+
+# 設定 py/ 目錄下所有檔案為可執行
+find "$REPO_DIR/py" -type f -exec chmod u+x {} \;
+echo "✓ py/ 目錄檔案已設定為可執行"
+
+# 設定 sh/ 目錄下所有檔案為可執行
+find "$REPO_DIR/sh" -type f -exec chmod u+x {} \;
+echo "✓ sh/ 目錄檔案已設定為可執行"
+
+echo ""
+echo "=== 下載 Rust 工具 ==="
+python3 "$SCRIPT_DIR/../py/dl-latest-rs.py" "$REPO_URL" "$REPO_DIR/rs/release/"
