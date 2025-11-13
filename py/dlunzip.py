@@ -151,6 +151,33 @@ def list_directory(target_dir):
         print(f"  {size_str:>15}  {item.name}{item_type}")
 
 
+def clear_directory(target_dir):
+    """清空目標目錄(保留目錄本身)"""
+    target_path = Path(target_dir)
+    if target_path.exists():
+        print(f"正在清空目標目錄: {target_dir}")
+        for item in target_path.iterdir():
+            if item.is_dir():
+                shutil.rmtree(item)
+            else:
+                item.unlink()
+
+
+def move_extracted_files(temp_extract_dir, target_dir):
+    """將解壓後的檔案從暫存目錄搬移到目標目錄"""
+    print(f"正在搬移檔案到: {target_dir}")
+    temp_path = Path(temp_extract_dir)
+    target_path = Path(target_dir)
+    
+    # 確保目標目錄存在
+    target_path.mkdir(parents=True, exist_ok=True)
+    
+    # 搬移所有檔案和目錄
+    for item in temp_path.iterdir():
+        dest = target_path / item.name
+        shutil.move(str(item), str(dest))
+
+
 def main():
     """主程式"""
     # 解析參數
@@ -160,9 +187,6 @@ def main():
     url = sys.argv[1]
     target_dir = sys.argv[2] if len(sys.argv) > 2 else '.'
     
-    # 確保目標目錄存在
-    Path(target_dir).mkdir(parents=True, exist_ok=True)
-    
     # 從 URL 取得檔案名稱
     parsed_url = urllib.parse.urlparse(url)
     filename = os.path.basename(parsed_url.path)
@@ -171,9 +195,10 @@ def main():
         print("錯誤: 無法從 URL 取得檔案名稱")
         sys.exit(1)
     
-    # 臨時下載檔案路徑 (使用系統臨時目錄)
-    temp_dir = tempfile.gettempdir()
-    temp_file = os.path.join(temp_dir, f"dlunzip_{os.getpid()}_{filename}")
+    # 建立臨時目錄 (使用系統臨時目錄，跨平台相容)
+    temp_base_dir = tempfile.mkdtemp(prefix=f"dlunzip_{os.getpid()}_")
+    temp_file = os.path.join(temp_base_dir, filename)
+    temp_extract_dir = os.path.join(temp_base_dir, "extracted")
     
     print(f"目標目錄: {target_dir}")
     
@@ -182,25 +207,39 @@ def main():
         download_file(url, temp_file)
         print(f"下載完成: {filename}")
         
-        # 解壓檔案
-        extract_file(temp_file, target_dir, filename)
+        # 解壓到暫存目錄
+        Path(temp_extract_dir).mkdir(parents=True, exist_ok=True)
+        extract_file(temp_file, temp_extract_dir, filename)
+        print("解壓完成")
         
-        # 清理臨時檔案
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
+        # 確認解壓成功 (檢查暫存目錄有內容)
+        extracted_items = list(Path(temp_extract_dir).iterdir())
+        if not extracted_items:
+            print("錯誤: 解壓後沒有找到任何檔案")
+            sys.exit(1)
         
-        print(f"解壓完成到: {target_dir}")
+        # 清空目標目錄
+        clear_directory(target_dir)
+        
+        # 搬移檔案到目標目錄
+        move_extracted_files(temp_extract_dir, target_dir)
+        
+        # 清理臨時目錄
+        if os.path.exists(temp_base_dir):
+            shutil.rmtree(temp_base_dir)
+        
+        print(f"完成! 檔案已解壓到: {target_dir}")
         list_directory(target_dir)
         
     except KeyboardInterrupt:
         print("\n\n操作已取消")
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
+        if os.path.exists(temp_base_dir):
+            shutil.rmtree(temp_base_dir)
         sys.exit(1)
     except Exception as e:
         print(f"\n錯誤: {e}")
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
+        if os.path.exists(temp_base_dir):
+            shutil.rmtree(temp_base_dir)
         sys.exit(1)
 
 

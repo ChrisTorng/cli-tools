@@ -1,3 +1,3 @@
 @echo off
-pasta | kv-splitter -p path | cpy
+echo %PATH% | kv-splitter -p path | cpy
 pasta
